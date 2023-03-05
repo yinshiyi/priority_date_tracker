@@ -4,6 +4,8 @@ import pandas as pd
 import random
 import time
 import os
+import seaborn as sns
+
 
 base_url = 'https://travel.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/{}/visa-bulletin-for-{}-{}.html'
 # 2005 is the first year of china backlog at all
@@ -93,20 +95,19 @@ for year in years:
             #master_list_long.append(df_list_long)
 
 finaldate=df_list_long[2]
-eb2_final=finaldate.loc[(finaldate['VisaType'] == '2nd') & (finaldate['countries'].str.contains('CHINA'))]
+eb2_final=finaldate.loc[(finaldate['VisaType'] == '2nd') & (finaldate['countries'].str.contains('CHINA'))].reset_index()
 
 prioitydate=df_list_long[3]
-eb2_priority=prioitydate.loc[(prioitydate['VisaType'] == '2nd') & (prioitydate['countries'].str.contains('CHINA'))]
-
-import seaborn as sns
+eb2_priority=prioitydate.loc[(prioitydate['VisaType'] == '2nd') & (prioitydate['countries'].str.contains('CHINA'))].reset_index()
 
 
-eb1_final=finaldate.loc[(finaldate['VisaType'] == '1st') & (finaldate['countries'].str.contains('CHINA'))]
-eb1_priority=prioitydate.loc[(prioitydate['VisaType'] == '1st') & (prioitydate['countries'].str.contains('CHINA'))]
 
-for table in [eb1_final,eb1_priority,eb2_final,eb2_priority]:
+eb1_final=finaldate.loc[(finaldate['VisaType'] == '1st') & (finaldate['countries'].str.contains('CHINA'))].reset_index()
+eb1_priority=prioitydate.loc[(prioitydate['VisaType'] == '1st') & (prioitydate['countries'].str.contains('CHINA'))].reset_index()
+
+for table in [eb1_final,eb1_priority]:
     sns.lineplot(data=table, x='date', y='delay_days')
-for table in [eb2]:
+for table in [eb2_final,eb2_priority]:
     sns.lineplot(data=table, x='date', y='delay_days')
 
 #########################
