@@ -5,6 +5,8 @@ import random
 import time
 import os
 import seaborn as sns
+from datetime import datetime, date, time, timezone
+import matplotlib.pyplot as plt
 
 
 base_url = 'https://travel.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/{}/visa-bulletin-for-{}-{}.html'
@@ -14,7 +16,8 @@ base_url = 'https://travel.state.gov/content/travel/en/legal/visa-law0/visa-bull
 # https://travel.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2016/visa-bulletin-for-october-2015.html
 # this is a big jump month and the divergence of the finalaction and priority
 # https://www.myprioritydate.com/VisaBulletin
-years = range(2007, 2024)[::-1]
+# 2007
+years = range(2022, 2024)[::-1]
 months = ['january', 'february', 'march', 'april', 'may', 'june',
           'july', 'august', 'september', 'october', 'november', 'december'][::-1]
 master_list=[]
@@ -94,28 +97,40 @@ for year in years:
             master_list.append({'year': str(year), 'month': month, 'df_list': df_list})
             #master_list_long.append(df_list_long)
 
+# only the last two tables out of the 4 are usefully for employment analysis
 finaldate=df_list_long[2]
-eb2_final=finaldate.loc[(finaldate['VisaType'] == '2nd') & (finaldate['countries'].str.contains('CHINA'))].reset_index()
-
 prioitydate=df_list_long[3]
-eb2_priority=prioitydate.loc[(prioitydate['VisaType'] == '2nd') & (prioitydate['countries'].str.contains('CHINA'))].reset_index()
 
+# seperating the 4 tables
+eb2_final=finaldate.loc[(finaldate['VisaType'] == '2nd') & (finaldate['countries'].str.contains('CHINA'))].reset_index(drop=True)
+eb2_priority=prioitydate.loc[(prioitydate['VisaType'] == '2nd') & (prioitydate['countries'].str.contains('CHINA'))].reset_index(drop=True)
 
+eb1_final=finaldate.loc[(finaldate['VisaType'] == '1st') & (finaldate['countries'].str.contains('CHINA'))].reset_index(drop=True)
+eb1_priority=prioitydate.loc[(prioitydate['VisaType'] == '1st') & (prioitydate['countries'].str.contains('CHINA'))].reset_index(drop=True)
 
-eb1_final=finaldate.loc[(finaldate['VisaType'] == '1st') & (finaldate['countries'].str.contains('CHINA'))].reset_index()
-eb1_priority=prioitydate.loc[(prioitydate['VisaType'] == '1st') & (prioitydate['countries'].str.contains('CHINA'))].reset_index()
-
+# make individual plots
 for table in [eb1_final,eb1_priority]:
-    sns.lineplot(data=table, x='date', y='delay_days')
+    ax = sns.lineplot(data=table, x='date', y='delay_days')
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
 for table in [eb2_final,eb2_priority]:
-    sns.lineplot(data=table, x='date', y='delay_days')
+    ax = sns.lineplot(data=table, x='date', y='delay_days')
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
+
+# concatenate the four tables
+merged_table = pd.concat([eb2_final.assign(category='EB2 Final Action Date'),
+                          eb2_priority.assign(category='EB2 Priority Date'),
+                          eb1_final.assign(category='EB1 Final Action Date'),
+                          eb1_priority.assign(category='EB1 Priority Date')])
+
+# create the 4 line plots with legends
+ax = sns.lineplot(data=merged_table, x='date', y='delay_days', hue='category')
+ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
 
 #########################
-# Concatenate the tables into a single DataFrame
-df = pd.concat([eb1_final, eb1_priority, eb2_final, eb2_priority])
+# print the final tables with timestamp to plot in R later
+today = datetime.now()
+filename = f"data/{today}_rawdata.csv"
+if not os.path.exists('data'):
+    os.mkdir('data')
+merged_table.to_csv(filename, index=False)
 
-# Add a "category" column to distinguish between the different tables
-df['category'] = pd.Series(['EB-1 (Final Action)', 'EB-1 (Priority Dates)', 'EB-2 (Final Action)', 'EB-2 (Priority Dates)']).repeat(len(df)//4).reset_index(drop=True)
-
-# Plot the data
-sns.lineplot(data=df, x='date', y='delay_days', hue='category')
