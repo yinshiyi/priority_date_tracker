@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import numpy as np
 import random
 import time
 import os
@@ -101,12 +102,24 @@ for year in years:
 finaldate=df_list_long[2]
 prioitydate=df_list_long[3]
 
+# concatenate the 2 tables
+world_merged_table = pd.concat([finaldate.assign(datetype='Final Action Date'),
+                          prioitydate.assign(datetype='Priority Date')])
+world_merged_table['countries2'] = np.where(world_merged_table['countries'].str.contains('All Chargeability'), 'ROW', 
+                          np.where(world_merged_table['countries'].str.contains('CHINA'), 'CHINA', world_merged_table['countries']))
+
 # seperating the 4 tables
 eb2_final=finaldate.loc[(finaldate['VisaType'] == '2nd') & (finaldate['countries'].str.contains('CHINA'))].reset_index(drop=True)
 eb2_priority=prioitydate.loc[(prioitydate['VisaType'] == '2nd') & (prioitydate['countries'].str.contains('CHINA'))].reset_index(drop=True)
 
 eb1_final=finaldate.loc[(finaldate['VisaType'] == '1st') & (finaldate['countries'].str.contains('CHINA'))].reset_index(drop=True)
 eb1_priority=prioitydate.loc[(prioitydate['VisaType'] == '1st') & (prioitydate['countries'].str.contains('CHINA'))].reset_index(drop=True)
+
+# keep the country info, replace long strings into short strings
+finaldate['countries2'] = np.where(finaldate['countries'].str.contains('All Chargeability'), 'ROW', 
+                          np.where(finaldate['countries'].str.contains('CHINA'), 'CHINA', finaldate['countries']))
+prioitydate['countries2'] = np.where(prioitydate['countries'].str.contains('All Chargeability'), 'ROW', 
+                          np.where(prioitydate['countries'].str.contains('CHINA'), 'CHINA', prioitydate['countries']))
 
 # make individual plots
 for table in [eb1_final,eb1_priority]:
@@ -126,6 +139,10 @@ merged_table = pd.concat([eb2_final.assign(category='EB2 Final Action Date'),
 ax = sns.lineplot(data=merged_table, x='date', y='delay_days', hue='category')
 ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
 
+# create the country line plots with legends 
+ax.sns.lineplot(data=finaldate.loc[finaldate['VisaType'] == '1st'], x='date', y='delay_days', hue='countries2',style='countries2', alpha=0.5,linewidth=5)
+ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
+
 #########################
 # print the final tables with timestamp to plot in R later
 today = datetime.now()
@@ -133,4 +150,56 @@ filename = f"data/{today}_rawdata.csv"
 if not os.path.exists('data'):
     os.mkdir('data')
 merged_table.to_csv(filename, index=False)
+
+today = datetime.now()
+filename = f"data/{today}_rawdata_world.csv"
+if not os.path.exists('data'):
+    os.mkdir('data')
+world_merged_table.to_csv(filename, index=False)
+
+########################
+# facet plot
+world_filtered = world_merged_table[(world_merged_table['VisaType'] == '1st') | (world_merged_table['VisaType'] == '2nd')]
+world_filtered = world_filtered[~world_filtered['countries2'].str.contains('HONDURAS')]
+world_filtered = world_filtered.sort_values('date')
+
+sns.set(style="ticks")
+sns.catplot(x="date", y="delay_days", hue="datetype", col="countries2", row="VisaType",
+            data=world_filtered, kind="point", height=2, aspect=3, facet_kws={'sharey': False})
+
+##################
+sns.set_style("whitegrid")
+g = sns.FacetGrid(world_filtered, row='VisaType', col='countries2', margin_titles=True, ylim=(-10, 4000), sharex=True, sharey=True)
+g.map(sns.scatterplot, 'date', 'delay_days', 'datetype', alpha=1, linewidth=0.5, s=5)
+g.set_xticklabels(rotation=90)
+plt.show()
+
+##############
+
+sns.set(style="ticks")
+g = sns.FacetGrid(world_filtered, row='VisaType', col='countries2', margin_titles=True, ylim=(-10, 4000), sharex=True, sharey=True)
+g.map(sns.scatterplot, 'date', 'delay_days', 'datetype', alpha=1, linewidth=0.5, s=10)
+g.set_xticklabels(rotation=90)
+g.set(xticks=world_filtered['date'].unique())
+g.set(xlabel=None)
+g.set_titles("{row_name} - {col_name}")
+g.fig.subplots_adjust(bottom=0.2)
+plt.show()
+
+
+#####################
+# Plot the data
+sns.set_style('whitegrid')
+g = sns.FacetGrid(data=world_filtered, row='VisaType', col='countries2', hue='datetype', height=3.5, aspect=1.2, sharey=False)
+g = g.map(plt.plot, 'date', 'delay_days', marker='o', markersize=4, linestyle='', alpha=0.7)
+g = g.set_titles(row_template='{row_name}', col_template='{col_name}')
+g = g.set_xlabels('Date').set_ylabels('Delay Days')
+g = g.set_xticklabels(rotation=90)
+g = g.set(xlim=(world_filtered['date'].min()-10, world_filtered['date'].max())+10)
+g = g.add_legend(title='Date Type', bbox_to_anchor=(1, 1))
+# Set different y-axis limits for the first row of plots
+for ax in g.axes[0]:
+    ax.set_ylim(-10, 600)
+plt.show()
+
 
