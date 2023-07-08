@@ -5,7 +5,7 @@ import numpy as np
 import random
 import time
 import os
-from datetime import datetime, date, time, timezone
+from datetime import datetime, date, timezone
 
 
 
@@ -102,6 +102,7 @@ world_merged_table = pd.concat([finaldate.assign(datetype='Final Action Date'),
                           prioitydate.assign(datetype='Priority Date')])
 world_merged_table['countries2'] = np.where(world_merged_table['countries'].str.contains('All Chargeability'), 'ROW', 
                           np.where(world_merged_table['countries'].str.contains('CHINA'), 'CHINA', world_merged_table['countries']))
+world_merged_table.drop('countries', axis=1, inplace=True)
 
 # seperating the 4 tables
 eb2_final=finaldate.loc[(finaldate['VisaType'] == '2nd') & (finaldate['countries'].str.contains('CHINA'))].reset_index(drop=True)
