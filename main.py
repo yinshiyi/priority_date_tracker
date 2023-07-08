@@ -8,6 +8,8 @@ import os
 import seaborn as sns
 from datetime import datetime, date, time, timezone
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+
 
 
 base_url = 'https://travel.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/{}/visa-bulletin-for-{}-{}.html'
@@ -162,10 +164,16 @@ world_merged_table.to_csv(filename, index=False)
 world_filtered = world_merged_table[(world_merged_table['VisaType'] == '1st') | (world_merged_table['VisaType'] == '2nd')]
 world_filtered = world_filtered[~world_filtered['countries2'].str.contains('HONDURAS')]
 world_filtered = world_filtered.sort_values('date')
+world_filtered['date2'] = world_filtered['date'].dt.strftime('%y-%m')
 
 sns.set(style="ticks")
-sns.catplot(x="date", y="delay_days", hue="datetype", col="countries2", row="VisaType",
+g = sns.catplot(x="date2", y="delay_days", hue="datetype", col="countries2", row="VisaType",
             data=world_filtered, kind="point", height=2, aspect=3, facet_kws={'sharey': False})
+# Set the major tick frequency to every 3 months
+g.axes[0,0].xaxis.set_major_locator(ticker.MultipleLocator(3))
+# rotation ?????
+g.set_xticklabels(rotation=90)
+
 
 ##################
 sns.set_style("whitegrid")
