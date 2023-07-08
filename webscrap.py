@@ -96,14 +96,13 @@ for year in years:
 # only the last two tables out of the 4 are usefully for employment analysis
 finaldate=df_list_long[2]
 prioitydate=df_list_long[3]
-
 # concatenate the 2 tables
 world_merged_table = pd.concat([finaldate.assign(datetype='Final Action Date'),
                           prioitydate.assign(datetype='Priority Date')])
-world_merged_table['countries2'] = np.where(world_merged_table['countries'].str.contains('All Chargeability'), 'ROW', 
-                          np.where(world_merged_table['countries'].str.contains('CHINA'), 'CHINA', world_merged_table['countries']))
-world_merged_table.drop('countries', axis=1, inplace=True)
+world_merged_table['countries'] = np.where(world_merged_table['countries'].str.contains('All Chargeability'), 'ROW', 
+                                            np.where(world_merged_table['countries'].str.contains('CHINA'), 'CHINA', world_merged_table['countries']))
 
+######################################################
 # seperating the 4 tables
 eb2_final=finaldate.loc[(finaldate['VisaType'] == '2nd') & (finaldate['countries'].str.contains('CHINA'))].reset_index(drop=True)
 eb2_priority=prioitydate.loc[(prioitydate['VisaType'] == '2nd') & (prioitydate['countries'].str.contains('CHINA'))].reset_index(drop=True)
