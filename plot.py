@@ -2,10 +2,27 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+from datetime import datetime, date, time, timezone
+import matplotlib.ticker as ticker
 
 # Load the data for plotting
 merged_table = pd.read_csv('data/<filename>.csv')
-world_merged_table = pd.read_csv('data/<filename>_world.csv')
+world_merged_table = pd.read_csv('data/2023-07-08_10-56-00_rawdata_world.csv')
+finaldate = world_merged_table.loc[world_merged_table['datetype'] == 'Final Action Date']
+prioitydate = world_merged_table.loc[world_merged_table['datetype'] == 'Priority Date']
+######################################################
+
+
+merged_table = (world_merged_table
+                .query("datetype == 'Final Action Date' or datetype == 'Priority Date'")
+                .query("VisaType in ['1st', '2nd'] and countries.str.contains('CHINA')")
+                .reset_index(drop=True)
+                .assign(category=lambda df: df['VisaType'] + ' ' + df['datetype'].str.split().str[0] + ' ' + df['datetype'].str.split().str[-1])
+                .sort_values('date', ascending=True)
+                )
+
+
+
 
 # Perform the necessary data transformations and create the plots
 # ...
@@ -16,6 +33,7 @@ world_merged_table = pd.read_csv('data/<filename>_world.csv')
 # create the 4 line plots with legends
 ax = sns.lineplot(data=merged_table, x='date', y='delay_days', hue='category')
 ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
+plt.savefig('plot.png')
 
 # create the country line plots with legends 
 ax.sns.lineplot(data=finaldate.loc[finaldate['VisaType'] == '1st'], x='date', y='delay_days', hue='countries2',style='countries2', alpha=0.5,linewidth=5)

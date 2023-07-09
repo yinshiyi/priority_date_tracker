@@ -128,10 +128,8 @@ merged_table = pd.concat([eb2_final.assign(category='EB2 Final Action Date'),
 # print the final tables with timestamp to plot in R later
 today = datetime.now()
 timestamp = today.strftime("%Y-%m-%d_%H-%M-%S")
-filename = os.path.join("data", f"{timestamp}_rawdata.csv")
 if not os.path.exists('data'):
     os.mkdir('data')
-merged_table.to_csv(filename, index=False)
 
 filename_world = os.path.join("data", f"{timestamp}_rawdata_world.csv")
 world_merged_table.to_csv(filename_world, index=False)
