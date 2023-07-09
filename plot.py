@@ -6,23 +6,26 @@ from datetime import datetime, date, time, timezone
 import matplotlib.ticker as ticker
 
 # Load the data for plotting
-merged_table = pd.read_csv('data/<filename>.csv')
+# read in todays date, and load the most recent csv in the data folder, out put figure as relvent name but include time stamp in the actual figure
 world_merged_table = pd.read_csv('data/2023-07-08_10-56-00_rawdata_world.csv')
-finaldate = world_merged_table.loc[world_merged_table['datetype'] == 'Final Action Date']
-prioitydate = world_merged_table.loc[world_merged_table['datetype'] == 'Priority Date']
+world_merged_table['date'] = pd.to_datetime(world_merged_table['date']).dt.strftime('%y-%m')
+
 ######################################################
 
 
 merged_table = (world_merged_table
                 .query("datetype == 'Final Action Date' or datetype == 'Priority Date'")
                 .query("VisaType in ['1st', '2nd'] and countries.str.contains('CHINA')")
-                .reset_index(drop=True)
                 .assign(category=lambda df: df['VisaType'] + ' ' + df['datetype'].str.split().str[0] + ' ' + df['datetype'].str.split().str[-1])
                 .sort_values('date', ascending=True)
+                .reset_index(drop=True)
                 )
-
-
-
+finaldate = (world_merged_table
+             .query("datetype == 'Final Action Date' and VisaType == '1st'")
+             .query("~countries.str.contains('HONDURAS')")
+             .sort_values(['date', 'countries'], ascending=[True, True])
+             .reset_index(drop=True)
+             )
 
 # Perform the necessary data transformations and create the plots
 # ...
@@ -30,17 +33,17 @@ merged_table = (world_merged_table
 # Plotting code goes here
 # ...
 
-# create the 4 line plots with legends
+# create the 4 line plots with legends for China my fav
 ax = sns.lineplot(data=merged_table, x='date', y='delay_days', hue='category')
-ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
-plt.savefig('plot.png')
+ax.xaxis.set_major_locator(ticker.MultipleLocator(3))
+# plt.savefig('plot.png')
 
-# create the country line plots with legends 
-ax.sns.lineplot(data=finaldate.loc[finaldate['VisaType'] == '1st'], x='date', y='delay_days', hue='countries2',style='countries2', alpha=0.5,linewidth=5)
+# create the country line plots with legends, world plot
+ax = sns.lineplot(data=finaldate, x='date', y='delay_days', hue='countries',style='countries', alpha=0.8,linewidth=5)
+plt.draw()
 ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
-
 ########################
-# facet plot
+# facet plot for consulting
 world_filtered = world_merged_table[(world_merged_table['VisaType'] == '1st') | (world_merged_table['VisaType'] == '2nd')]
 world_filtered = world_filtered[~world_filtered['countries2'].str.contains('HONDURAS')]
 world_filtered = world_filtered.sort_values('date')
