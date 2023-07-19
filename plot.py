@@ -20,6 +20,13 @@ merged_table = (world_merged_table
                 .sort_values('date', ascending=True)
                 .reset_index(drop=True)
                 )
+merged_table_india = (world_merged_table
+                .query("datetype == 'Final Action Date' or datetype == 'Priority Date'")
+                .query("VisaType in ['1st', '2nd'] and countries.str.contains('INDIA')")
+                .assign(category=lambda df: df['VisaType'] + ' ' + df['datetype'].str.split().str[0] + ' ' + df['datetype'].str.split().str[-1])
+                .sort_values('date', ascending=True)
+                .reset_index(drop=True)
+                )
 finaldate = (world_merged_table
              .query("datetype == 'Final Action Date' and VisaType == '1st'")
              .query("~countries.str.contains('HONDURAS')")
@@ -37,6 +44,9 @@ finaldate = (world_merged_table
 ax = sns.lineplot(data=merged_table, x='date', y='delay_days', hue='category')
 ax.xaxis.set_major_locator(ticker.MultipleLocator(3))
 # plt.savefig('plot.png')
+
+ax = sns.lineplot(data=merged_table_india, x='date', y='delay_days', hue='category')
+ax.xaxis.set_major_locator(ticker.MultipleLocator(3))
 
 # create the country line plots with legends, world plot
 ax = sns.lineplot(data=finaldate, x='date', y='delay_days', hue='countries',style='countries', alpha=0.8,linewidth=5)
