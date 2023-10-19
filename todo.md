@@ -1,5 +1,5 @@
 # applications
-1. NEXUS program, detroit or seattle are good options
+1. NEXUS program, detroit or seattle are good options, DoDID=TSApre
 2. USCG reserve / Army scientist reserve
    - Citizenship for parents gc
    - spaceA Travis to HI and AK, DC area, Guam, Japan, Germany, Trenton, St. Louis
