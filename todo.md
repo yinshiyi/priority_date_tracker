@@ -10,3 +10,4 @@
    - wyndham
    - southwest business plus personal to get companion pass 
 7. better mortgage? CalFHA
+8. BB gun for squirrels
