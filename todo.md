@@ -1,7 +1,7 @@
 # applications
 1. NEXUS program, detroit or seattle are good options, DoDID=TSApre
 2. USCG reserve / Army scientist reserve
-   - Citizenship for parents gc
+   - Citizenship for parents gc, a few months, medicare or medicaid, HUD/Affordable Housing
    - spaceA Travis to HI and AK, DC area, Guam, Japan, Germany, Trenton, St. Louis
    - cons: lose freedom to visit China, unless obtain HK passport
 4. book international flights: Montenegro, Croatia, UK, Iceland, Singapore, Japan, Korea, Russia, Austrlia, New Zealand, Vietnam, Thailand 
