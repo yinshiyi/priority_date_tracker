@@ -3,10 +3,10 @@
 ## World plots
 ![all_plot](<2023_05_world_facet.png>)
 
-## 2024_Feb_update
+## 2024_Feb_update for China
 ![china](<china_2024_feb.png>)
 
-The EB1 slope that is very steep near 2023 new year is the [Visa Retrogression](https://www.uscis.gov/green-card/green-card-processes-and-procedures/visa-availability-priority-dates/visa-retrogression), becuase it is delaying faster than the time passing normally.
+The EB1 slope that is >1 near 2023 new year is the [Visa Retrogression](https://www.uscis.gov/green-card/green-card-processes-and-procedures/visa-availability-priority-dates/visa-retrogression), becuase it is delaying faster than the time passing normally (which is the slope of majority of 2023).
 ## EB1 plots
 Currently data are for China born immigrant 
 ![EB1_plot](<EB1.png>)
