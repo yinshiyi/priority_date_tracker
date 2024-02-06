@@ -7,7 +7,7 @@ import matplotlib.ticker as ticker
 
 # Load the data for plotting
 # read in todays date, and load the most recent csv in the data folder, out put figure as relvent name but include time stamp in the actual figure
-world_merged_table = pd.read_csv('data/2023-07-20_08-22-50_rawdata_world.csv')
+world_merged_table = pd.read_csv('data/2024-02-06_15-26-44_rawdata_world.csv')
 world_merged_table['date'] = pd.to_datetime(world_merged_table['date']).dt.strftime('%y-%m')
 
 ######################################################
@@ -48,12 +48,13 @@ ax.xaxis.set_major_locator(ticker.MultipleLocator(3))
 ax = sns.lineplot(data=merged_table_india, x='date', y='delay_days', hue='category')
 ax.xaxis.set_major_locator(ticker.MultipleLocator(3))
 
-# create the country line plots with legends, world plot
+# create the country line plots with legends, world plot for EB1
 ax = sns.lineplot(data=finaldate, x='date', y='delay_days', hue='countries',style='countries', alpha=0.8,linewidth=5)
 plt.draw()
 ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
 ########################
-# facet plot for consulting
+# more work is needed
+# facet plot for consulting, countries2 is short string versions
 world_filtered = world_merged_table[(world_merged_table['VisaType'] == '1st') | (world_merged_table['VisaType'] == '2nd')]
 world_filtered = world_filtered[~world_filtered['countries2'].str.contains('HONDURAS')]
 world_filtered = world_filtered.sort_values('date')
