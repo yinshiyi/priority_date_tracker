@@ -7,7 +7,7 @@ import matplotlib.ticker as ticker
 
 # Load the data for plotting
 # read in todays date, and load the most recent csv in the data folder, out put figure as relvent name but include time stamp in the actual figure
-world_merged_table = pd.read_csv('data/2023-07-08_10-56-00_rawdata_world.csv')
+world_merged_table = pd.read_csv('data/2023-07-20_08-22-50_rawdata_world.csv')
 world_merged_table['date'] = pd.to_datetime(world_merged_table['date']).dt.strftime('%y-%m')
 
 ######################################################
