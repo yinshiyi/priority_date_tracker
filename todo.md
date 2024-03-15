@@ -10,5 +10,5 @@
 6. apply for business credit card
    - wyndham
    - southwest business plus personal to get companion pass 
-7. better mortgage? CalFHA
+7. better mortgage? CalFHA, H1B or O1 should qualify too
 8. BB gun for squirrels
