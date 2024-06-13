@@ -18,7 +18,7 @@ base_url = 'https://travel.state.gov/content/travel/en/legal/visa-law0/visa-bull
 # this is a big jump month and the divergence of the finalaction and priority
 # https://www.myprioritydate.com/VisaBulletin
 # 2007
-years = range(2022, 2024)[::-1]
+years = range(2022, 2025)[::-1]
 months = ['january', 'february', 'march', 'april', 'may', 'june',
           'july', 'august', 'september', 'october', 'november', 'december'][::-1]
 master_list = []

@@ -7,7 +7,7 @@ import matplotlib.ticker as ticker
 
 # Load the data for plotting
 # read in todays date, and load the most recent csv in the data folder, out put figure as relvent name but include time stamp in the actual figure
-world_merged_table = pd.read_csv('data/2024-02-06_15-26-44_rawdata_world.csv')
+world_merged_table = pd.read_csv('data/2024-06-12_20-20-10_rawdata_world.csv')
 world_merged_table['date'] = pd.to_datetime(world_merged_table['date']).dt.strftime('%y-%m')
 
 ######################################################
@@ -37,13 +37,18 @@ finaldate = (world_merged_table
 # Perform the necessary data transformations and create the plots
 # ...
 
+# timestamp
+today = datetime.now()
+timestamp = today.strftime("%Y-%m-%d_%H-%M-%S")
+
 # Plotting code goes here
 # ...
 
 # create the 4 line plots with legends for China my fav
 ax = sns.lineplot(data=merged_table, x='date', y='delay_days', hue='category')
 ax.xaxis.set_major_locator(ticker.MultipleLocator(3))
-# plt.savefig('plot.png')
+ax.set_title('EBs delay for China')
+# plt.savefig(f'plot_china_{timestamp}.png')
 
 ax = sns.lineplot(data=merged_table_india, x='date', y='delay_days', hue='category')
 ax.xaxis.set_major_locator(ticker.MultipleLocator(3))
