@@ -7,13 +7,16 @@ import matplotlib.ticker as ticker
 
 # Load the data for plotting
 # read in todays date, and load the most recent csv in the data folder, out put figure as relvent name but include time stamp in the actual figure
-world_merged_table = pd.read_csv('data/2024-06-12_20-20-10_rawdata_world.csv')
+most_recent = pd.read_csv('data/2024-06-12_20-20-10_rawdata_world.csv')
+#this table is the 2016-2022 table summary
+previous = pd.read_csv('data/2024-06-13_09-59-17_rawdata_world.csv')
+world_merged_table = pd.concat([most_recent, previous])
 world_merged_table['date'] = pd.to_datetime(world_merged_table['date']).dt.strftime('%y-%m')
 
 ######################################################
 
 
-merged_table = (world_merged_table
+merged_table_china = (world_merged_table
                 .query("datetype == 'Final Action Date' or datetype == 'Priority Date'")
                 .query("VisaType in ['1st', '2nd'] and countries.str.contains('CHINA')")
                 .assign(category=lambda df: df['VisaType'] + ' ' + df['datetype'].str.split().str[0] + ' ' + df['datetype'].str.split().str[-1])
@@ -45,8 +48,9 @@ timestamp = today.strftime("%Y-%m-%d_%H-%M-%S")
 # ...
 
 # create the 4 line plots with legends for China my fav
-ax = sns.lineplot(data=merged_table, x='date', y='delay_days', hue='category')
-ax.xaxis.set_major_locator(ticker.MultipleLocator(3))
+# plt.figure(figsize=(24, 6))
+ax = sns.lineplot(data=merged_table_china, x='date', y='delay_days', hue='category')
+ax.xaxis.set_major_locator(ticker.MultipleLocator(12))
 ax.set_title('EBs delay for China')
 # plt.savefig(f'plot_china_{timestamp}.png')
 
